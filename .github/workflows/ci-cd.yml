@@ -12,7 +12,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
@@ -26,20 +25,26 @@ jobs:
       with:
         dotnet-version: '10.0.x'
 
-    # 👉 Restaurar la solución completa
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: .
+    # ---------------------------
+    # RESTORE
+    # ---------------------------
+    - name: Restore API
+      run: dotnet restore SistemaEscolar.API/SistemaEscolar.API.csproj
 
-    # 👉 Compilar API y Tests
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-      working-directory: .
+    - name: Restore Tests
+      run: dotnet restore SistemaEscolar.Tests/SistemaEscolar.Tests.csproj
 
-    # 👉 Ejecutar pruebas dentro de la carpeta de tests
+    # ---------------------------
+    # BUILD
+    # ---------------------------
+    - name: Build API
+      run: dotnet build SistemaEscolar.API/SistemaEscolar.API.csproj --no-restore --configuration Release
+
+    # ---------------------------
+    # TESTS
+    # ---------------------------
     - name: Run tests
-      run: dotnet test SistemaEscolar.Tests --no-build --configuration Release --verbosity normal
-      working-directory: .
+      run: dotnet test SistemaEscolar.Tests/SistemaEscolar.Tests.csproj --no-build --configuration Release --verbosity normal
 
   docker-build-push:
     name: Build and Push Docker Image
@@ -48,7 +53,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -71,12 +76,9 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
           type=sha,prefix={{branch}}-
           latest
 
-    # 👉 Construir imagen desde la carpeta correcta
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
