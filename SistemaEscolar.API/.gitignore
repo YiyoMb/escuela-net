@@ -1,0 +1,33 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Docker
+.dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Secrets
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json

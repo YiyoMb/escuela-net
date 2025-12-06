@@ -3,19 +3,16 @@ using SistemaEscolar.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar servicios al contenedor
-//builder.Services.AddControllers();
-
-//Agregar servicios al contenedor ignorando las referencias circulares
+// Agregar servicios al contenedor ignorando referencias circulares
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = 
+        options.JsonSerializerOptions.ReferenceHandler =
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Solo registrar SQL Server si NO estamos en entorno de pruebas
-if (builder.Environment.EnvironmentName != "Testing")
+// Registrar SQL Server SOLO si NO estás ejecutando tests
+if (!builder.Environment.IsEnvironment("Testing"))
 {
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(
@@ -24,11 +21,11 @@ if (builder.Environment.EnvironmentName != "Testing")
     );
 }
 
-// Configurar Swagger
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configurar CORS (permitir peticiones desde el frontend)
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -38,7 +35,7 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-// Configurar para escuchar en el puerto correcto dentro del contenedor
+// Kestrel (solo para Docker o cuando lo necesites)
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ListenAnyIP(8080);
@@ -46,23 +43,24 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 var app = builder.Build();
 
-// Configurar el pipeline HTTP
+// Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// IMPORTANTE: Habilitar archivos estáticos (HTML, CSS, JS)
-app.UseDefaultFiles(); // Busca index.html por defecto
-app.UseStaticFiles();  // Sirve archivos de wwwroot
+// Archivos estáticos
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseCors("AllowAll");
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
 
-// Hacer la clase Program accesible para pruebas de integración
+// Necesario para los tests de integración
 public partial class Program { }
