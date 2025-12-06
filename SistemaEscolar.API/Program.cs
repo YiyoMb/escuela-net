@@ -12,30 +12,38 @@ builder.Services.AddControllers()
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Configurar base de datos (SQLite para producción con baja RAM, SQL Server para desarrollo)
-var useSqlite = builder.Configuration.GetValue<bool>("UseSqlite", false);
-
-if (useSqlite)
+// ===== CONFIGURACIÓN CONDICIONAL DE BASE DE DATOS =====
+// 🔥 CRÍTICO: Solo configurar DbContext si NO estamos en Testing
+if (builder.Environment.EnvironmentName != "Testing")
 {
-    // Crear directorio data si no existe
-    var dbPath = Path.Combine(builder.Environment.ContentRootPath, "data", "escolar.db");
-    var directory = Path.GetDirectoryName(dbPath);
-    if (!Directory.Exists(directory))
+    var useSqlite = builder.Configuration.GetValue<bool>("UseSqlite", false);
+
+    if (useSqlite)
     {
-        Directory.CreateDirectory(directory!);
+        // Crear directorio data si no existe
+        var dbPath = Path.Combine(builder.Environment.ContentRootPath, "data", "escolar.db");
+        var directory = Path.GetDirectoryName(dbPath);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory!);
+        }
+        
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlite($"Data Source={dbPath}"));
+        
+        Console.WriteLine($"✅ [DEPLOY AUTO] Usando SQLite: {dbPath}");
     }
-    
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlite($"Data Source={dbPath}"));
-    
-    Console.WriteLine($"✅ [DEPLOY AUTO] Usando SQLite: {dbPath}");
+    else
+    {
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        
+        Console.WriteLine("✅ [DEPLOY AUTO] Usando SQL Server");
+    }
 }
 else
 {
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-    
-    Console.WriteLine("✅ [DEPLOY AUTO] Usando SQL Server");
+    Console.WriteLine("⚙️ [TESTING MODE] - DbContext será configurado por el test factory");
 }
 
 // Swagger
@@ -52,7 +60,7 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-// Kestrel (solo para Docker o cuando lo necesites)
+// Kestrel
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ListenAnyIP(8080);
@@ -60,20 +68,23 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 var app = builder.Build();
 
-// ===== AGREGAR ESTE BLOQUE COMPLETO =====
-// Aplicar migraciones automáticamente
-using (var scope = app.Services.CreateScope())
+// ===== APLICAR MIGRACIONES AUTOMÁTICAMENTE =====
+// 🔥 Solo en ambientes NO Testing
+if (app.Environment.EnvironmentName != "Testing")
 {
-    var services = scope.ServiceProvider;
-    try
+    using (var scope = app.Services.CreateScope())
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
-        Console.WriteLine("✅ Migraciones aplicadas correctamente");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Error al aplicar migraciones: {ex.Message}");
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            context.Database.Migrate();
+            Console.WriteLine("✅ Migraciones aplicadas correctamente");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error al aplicar migraciones: {ex.Message}");
+        }
     }
 }
 
