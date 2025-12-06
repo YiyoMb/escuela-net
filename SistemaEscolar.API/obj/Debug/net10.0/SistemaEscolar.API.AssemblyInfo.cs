@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaEscolar.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0eb803dcbb906297540e097661284a4d43f7bc88")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f6caccb1ab16343c178632b35d2ac2b002940ab")]
 [assembly: System.Reflection.AssemblyProductAttribute("SistemaEscolar.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SistemaEscolar.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
