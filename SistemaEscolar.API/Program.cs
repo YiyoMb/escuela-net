@@ -60,6 +60,23 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 var app = builder.Build();
 
+// ===== AGREGAR ESTE BLOQUE COMPLETO =====
+// Aplicar migraciones automáticamente
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+        Console.WriteLine("✅ Migraciones aplicadas correctamente");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error al aplicar migraciones: {ex.Message}");
+    }
+}
+
 // Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
