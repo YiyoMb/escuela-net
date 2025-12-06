@@ -1,65 +1,61 @@
 name: CI/CD Pipeline
 
-# Cuándo se ejecuta este pipeline
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch: # Permite ejecutarlo manualmente
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # JOB 1: Compilar y probar
+
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
     
     steps:
-    # 1. Descargar el código
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Configurar .NET 10
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
 
-    # 3. Restaurar dependencias
+    # 👉 Restaurar la solución completa
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: .
 
-    # 4. Compilar el proyecto
+    # 👉 Compilar API y Tests
     - name: Build
       run: dotnet build --no-restore --configuration Release
+      working-directory: .
 
-    # 5. Ejecutar pruebas
+    # 👉 Ejecutar pruebas dentro de la carpeta de tests
     - name: Run tests
-      run: dotnet test --no-build --configuration Release --verbosity normal
+      run: dotnet test SistemaEscolar.Tests --no-build --configuration Release --verbosity normal
+      working-directory: .
 
-  # JOB 2: Construir y subir imagen Docker
   docker-build-push:
     name: Build and Push Docker Image
-    needs: build-and-test  # Solo se ejecuta si las pruebas pasan
+    needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    
+
     steps:
-    # 1. Descargar el código
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Configurar Docker Buildx
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    # 3. Login a GitHub Container Registry
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
       with:
@@ -67,7 +63,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # 4. Extraer metadata para Docker
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -81,7 +76,7 @@ jobs:
           type=sha,prefix={{branch}}-
           latest
 
-    # 5. Construir y subir imagen Docker
+    # 👉 Construir imagen desde la carpeta correcta
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
