@@ -206,7 +206,6 @@ C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\rjs
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\scopedcss\bundle\SistemaEscolar.API.styles.css
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\compressed\l9gkxgkqmk-{0}-zzb6r33mnm-zzb6r33mnm.gz
-C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\compressed\266nxwxck9-{0}-vybfk87d13-vybfk87d13.gz
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\compressed\wsw6jvalgt-{0}-jfg0xa19me-jfg0xa19me.gz
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\staticwebassets.build.json.cache
@@ -248,3 +247,4 @@ C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\bin\Debug\net10.0\run
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\bin\Debug\net10.0\runtimes\win-arm64\native\e_sqlite3.dll
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\bin\Debug\net10.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\bin\Debug\net10.0\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\diego\Documents\SistemaEscolar\SistemaEscolar.API\obj\Debug\net10.0\compressed\266nxwxck9-{0}-0qs3n5c09t-0qs3n5c09t.gz

@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
 
 env:
@@ -92,7 +92,7 @@ jobs:
     name: Deploy to VPS
     needs: docker-build-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     
     steps:
     - name: Deploy to VPS via SSH
