@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SistemaEscolar.API/SistemaEscolar.API.csproj" />
+  <Project Path="SistemaEscolar.Tests/SistemaEscolar.Tests.csproj" />
+</Solution>
