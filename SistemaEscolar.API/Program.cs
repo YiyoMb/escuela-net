@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using SistemaEscolar.API.Data;
 
@@ -11,14 +12,30 @@ builder.Services.AddControllers()
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Registrar SQL Server SOLO si NO estás ejecutando tests
-if (!builder.Environment.IsEnvironment("Testing"))
+// Configurar base de datos (SQLite para producción con baja RAM, SQL Server para desarrollo)
+var useSqlite = builder.Configuration.GetValue<bool>("UseSqlite", false);
+
+if (useSqlite)
+{
+    // Crear directorio data si no existe
+    var dbPath = Path.Combine(builder.Environment.ContentRootPath, "data", "escolar.db");
+    var directory = Path.GetDirectoryName(dbPath);
+    if (!Directory.Exists(directory))
+    {
+        Directory.CreateDirectory(directory!);
+    }
+    
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite($"Data Source={dbPath}"));
+    
+    Console.WriteLine($"✅ Usando SQLite: {dbPath}");
+}
+else
 {
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DefaultConnection")
-        )
-    );
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    
+    Console.WriteLine("✅ Usando SQL Server");
 }
 
 // Swagger
