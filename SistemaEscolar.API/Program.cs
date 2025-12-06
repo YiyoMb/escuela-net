@@ -28,14 +28,14 @@ if (useSqlite)
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlite($"Data Source={dbPath}"));
     
-    Console.WriteLine($"✅ Usando SQLite: {dbPath}");
+    Console.WriteLine($"✅ [DEPLOY AUTO] Usando SQLite: {dbPath}");
 }
 else
 {
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
     
-    Console.WriteLine("✅ Usando SQL Server");
+    Console.WriteLine("✅ [DEPLOY AUTO] Usando SQL Server");
 }
 
 // Swagger
